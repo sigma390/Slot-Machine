@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt" //format package
+	"math/rand"
 )
 
 func getName() string {
@@ -38,6 +39,41 @@ func getBet(balance uint) uint {
 	fmt.Printf("You have selected %d as betting Amount\n", betAmount)
 	return betAmount
 
+}
+
+func getRandomNumber(min int, max int) int {
+
+	return rand.Intn(max-min+1) + min
+}
+
+func gerSpin(reel []string, rows int, cols int) [][]string {
+	result := [][]string{}
+
+	//insert empty rows
+	for i := 0; i < rows; i++ {
+		result = append(result, []string{})
+
+	}
+
+	//make columns
+
+	for col := 0; col < cols; col++ {
+		selected := map[int]bool{}
+		for row := 0; row < rows; row++ {
+			for {
+				randomIndex := getRandomNumber(0, len(reel)-1)
+
+				if selected[randomIndex] == false {
+					result[row] = append(result[row], reel[randomIndex])
+					selected[randomIndex] = true
+					break
+				}
+			}
+		}
+	}
+
+	// generate columns
+	return result
 }
 
 func generateSymbolsArray(symbols map[string]uint) []string {
