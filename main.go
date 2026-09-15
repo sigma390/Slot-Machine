@@ -46,7 +46,7 @@ func getRandomNumber(min int, max int) int {
 	return rand.Intn(max-min+1) + min
 }
 
-func gerSpin(reel []string, rows int, cols int) [][]string {
+func getSpin(reel []string, rows int, cols int) [][]string {
 	result := [][]string{}
 
 	//insert empty rows
@@ -63,8 +63,8 @@ func gerSpin(reel []string, rows int, cols int) [][]string {
 			for {
 				randomIndex := getRandomNumber(0, len(reel)-1)
 
-				if !selected[randomIndex] {
-					result[row][col] = reel[randomIndex]
+				if selected[randomIndex] == false {
+					result[row] = append(result[row], reel[randomIndex])
 					selected[randomIndex] = true
 					break
 				}
@@ -102,6 +102,8 @@ func main() {
 	// }
 	symbolsArray := generateSymbolsArray(symbols)
 	fmt.Printf("Symbols Array : %v\n", symbolsArray)
+	spin := getSpin(symbolsArray, 3, 3)
+	fmt.Println(spin)
 	var name string = getName()
 	var balance uint = 200
 
