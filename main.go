@@ -63,8 +63,8 @@ func gerSpin(reel []string, rows int, cols int) [][]string {
 			for {
 				randomIndex := getRandomNumber(0, len(reel)-1)
 
-				if selected[randomIndex] == false {
-					result[row] = append(result[row], reel[randomIndex])
+				if !selected[randomIndex] {
+					result[row][col] = reel[randomIndex]
 					selected[randomIndex] = true
 					break
 				}
