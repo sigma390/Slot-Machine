@@ -8,6 +8,7 @@
 *.so
 *.dylib
 main
+slot-machine
 
 # Test binary, built with `go test -c`
 *.test

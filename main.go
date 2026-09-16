@@ -1,103 +1,6 @@
 package main
 
-import (
-	"fmt" //format package
-	"math/rand"
-)
-
-func getName() string {
-	name := "" // var name string
-	fmt.Printf("Welcome to Om's casino\n")
-	fmt.Printf("Enter Your name : ")
-	_, err := fmt.Scanln(&name)
-	if err != nil {
-		fmt.Printf("%s \n", err)
-		return ""
-	}
-	fmt.Printf("Welcome %s , lets play! \n", name)
-	return name
-}
-
-func getBet(balance uint) uint {
-
-	betAmount := uint(0)
-
-	for true {
-		fmt.Printf("Hey Enter an amount to place a Bet\n")
-		_, err := fmt.Scan(&betAmount)
-		if err != nil {
-			fmt.Printf("Please enter a valid amount", err)
-			continue
-		}
-		if betAmount > balance {
-			fmt.Printf("You have insufficient balance\n")
-			return 0
-		} else {
-			break
-		}
-	}
-	fmt.Printf("You have selected %d as betting Amount\n", betAmount)
-	return betAmount
-
-}
-
-func getRandomNumber(min int, max int) int {
-
-	return rand.Intn(max-min+1) + min
-}
-
-func getSpin(reel []string, rows int, cols int) [][]string {
-	result := [][]string{}
-
-	//insert empty rows
-	for i := 0; i < rows; i++ {
-		result = append(result, []string{})
-
-	}
-
-	//make columns
-
-	for col := 0; col < cols; col++ {
-		selected := map[int]bool{}
-		for row := 0; row < rows; row++ {
-			for {
-				randomIndex := getRandomNumber(0, len(reel)-1)
-
-				if selected[randomIndex] == false {
-					result[row] = append(result[row], reel[randomIndex])
-					selected[randomIndex] = true
-					break
-				}
-			}
-		}
-	}
-
-	// generate columns
-	return result
-}
-
-func printSpin(spin [][]string) {
-	for _, row := range spin {
-		fmt.Printf("\n")
-		for j, symbol := range row {
-			fmt.Printf("%s ", symbol)
-			if j != len(row)-1 {
-				fmt.Printf(" | ")
-			}
-		}
-		fmt.Println()
-	}
-}
-
-func generateSymbolsArray(symbols map[string]uint) []string {
-	var symbolsArray []string
-	for symbol, count := range symbols {
-		for i := 0; i < int(count); i++ {
-			symbolsArray = append(symbolsArray, symbol)
-		}
-	}
-	return symbolsArray
-}
+import "fmt"
 
 func main() {
 	symbols := map[string]uint{
@@ -107,29 +10,55 @@ func main() {
 		"D": 25,
 	}
 
-	// multipliers := map[string]uint{
-	// 	"A": 20,
-	// 	"B": 14,
-	// 	"C": 8,
-	// 	"D": 4,
-	// }
-	symbolsArray := generateSymbolsArray(symbols)
-	fmt.Printf("Symbols Array : %v\n", symbolsArray)
+	multipliers := map[string]uint{
+		"A": 20,
+		"B": 14,
+		"C": 8,
+		"D": 4,
+	}
 
-	var name string = getName()
-	var balance uint = 200
+	symbolsArray := generateSymbolsArray(symbols)
+
+	name := getName()
+	if name == "" {
+		return
+	}
+
+	balance := uint(200)
 
 	for balance > 0 {
-		bet := getBet((balance))
+		bet := getBet(balance)
 		if bet == 0 {
 			break
 		}
+
 		balance -= bet
-		fmt.Printf("Your balance after betting is %d\n", balance)
+		fmt.Printf("Balance after placing bet: %d\n", balance)
 
 		spin := getSpin(symbolsArray, 3, 3)
 		printSpin(spin)
+
+		winnings := checkWinnings(spin, multipliers)
+		totalWin := uint(0)
+		for _, multi := range winnings {
+			if multi > 0 {
+				win := multi * bet
+				balance += win
+				totalWin += win
+				fmt.Printf(">> You won %d (multiplier: %dx)!\n", win, multi)
+			}
+		}
+
+		if totalWin == 0 {
+			fmt.Println("No winning rows this round.")
+		}
+
+		fmt.Printf("Current Balance: %d\n\n", balance)
 	}
 
-	fmt.Printf("Hello %s\n", name)
+	if balance == 0 {
+		fmt.Println("You have run out of balance! Game Over.")
+	}
+
+	fmt.Printf("Thanks for playing, %s! Final balance: %d\n", name, balance)
 }
